@@ -33,7 +33,7 @@ def CalcAngleSum(P, q):
         else:
             #calculate the costheta
             costheta = (point1[0] * point2[0] + point1[1] * point2[1] + point1[2] * point2[2]) / (mod1 * mod2)
-        anglesum += math.acos(costheta)
+        anglesum += math.acos(min(1,max(costheta, -1)))
         
     return anglesum
         
@@ -82,13 +82,19 @@ def main(argv):
 
     #open the las file
     ifile = laspy.file.File(inputfile, mode = "r")
-
     scale = ifile.header.scale[0]
-                
+    
+    #calculate point in polygon
+    i = 0
+    r = 0            
     for p in ifile.points:
+        i+=1
         ang = CalcAngleSum(verts, [p[0][0]*scale,p[0][1]*scale,p[0][2]*scale])
-        if ang >= math.pi :
-           print ang
+        if ang >= math.pi * 2 :
+            print p[0][0]*scale,p[0][1]*scale,p[0][2]*scale
+            r+=1
+    print i
+    print r
     
 if __name__ == "__main__":
     main(sys.argv[1:])

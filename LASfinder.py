@@ -2,7 +2,6 @@ import sys
 import laspy
 import numpy
 import getopt
-import datetime
 import math 
 import re
 

@@ -1,8 +1,9 @@
 import sys
-import getopt
-import numpy
-import math 
 import laspy
+import numpy
+import getopt
+import datetime
+import math 
 import re
 
 def Modulus(p):
@@ -64,11 +65,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"hi:v:o:")
     except getopt.GetoptError:
-        print 'LASfinder.py -i <inputfile.las> -v <boundingVericiesFile> -o <outputfile>'
+        print 'LASfinder.py -i <inputfile.las> -v <boundingVericiesFile> -o <outputfile.las>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print 'LASfinder.py -i <inputfile.las> -v <boundingVericiesFile> -o <outputfile>'
+            print 'LASfinder.py -i <inputfile.las> -v <boundingVericiesFile> -o <outputfile.las>'
             sys.exit(1)
         elif opt in ("-i"):
             inputfile = arg
@@ -85,16 +86,18 @@ def main(argv):
     scale = ifile.header.scale[0]
     
     #calculate point in polygon
-    i = 0
-    r = 0            
-    for p in ifile.points:
-        i+=1
-        ang = CalcAngleSum(verts, [p[0][0]*scale,p[0][1]*scale,p[0][2]*scale])
-        if ang >= math.pi * 2 :
-            print p[0][0]*scale,p[0][1]*scale,p[0][2]*scale
-            r+=1
-    print i
-    print r
+    keepPoints = [ p for p in ifile.points if CalcAngleSum(verts, [p[0][0]*scale,p[0][1]*scale,p[0][2]*scale]) >= math.pi * 2 ]
+
+    #generate output file    
+    if re.match(r'.*\.las', outputfile):
+        ofile = laspy.file.File(outputfile,mode = "w", header = ifile.header)
+        ofile.points = keepPoints
+        ofile.close()
+    else:
+        ofile = open(outputfile, "w")
+        print >> ofile, keepPoints
+        ofile.close()
+    ifile.close()
     
 if __name__ == "__main__":
     main(sys.argv[1:])

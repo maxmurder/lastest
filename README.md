@@ -11,3 +11,5 @@ Usage:
     
     Takes a .las file and a polygon verticies text file (see out.txt) as input. Outputs
     a plaintext file of points in X,Y,Z format.
+    
+    Uses a simple winding number algorithm to determine if a the point is wihtin the polygon.

@@ -95,7 +95,9 @@ def main(argv):
         ofile.close()
     else:
         ofile = open(outputfile, "w")
-        print >> ofile, keepPoints
+        for p in keepPoints:
+            s = "{0},{1},{2}\n".format(p[0][0],p[0][1],p[0][2])
+            ofile.write(s)
         ofile.close()
     ifile.close()
     
